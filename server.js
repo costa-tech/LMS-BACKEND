@@ -24,6 +24,8 @@ import courseRoutes from './src/routes/course.routes.js';
 import adminRoutes from './src/routes/admin.routes.js';
 import cartRoutes from './src/routes/cart.routes.js';
 import noticeRoutes from './src/routes/notice.routes.js';
+import accessKeyRoutes from './src/routes/accessKey.routes.js';
+import courseContentRoutes from './src/routes/courseContent.routes.js';
 
 // Get directory name in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -105,6 +107,8 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/notices', noticeRoutes);
+app.use('/api/access-keys', accessKeyRoutes);
+app.use('/api/course-content', courseContentRoutes);
 
 // Handle 404 - Route not found
 app.use((req, res) => {
