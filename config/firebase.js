@@ -5,7 +5,13 @@
 
 import admin from 'firebase-admin';
 import dotenv from 'dotenv';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import logger from '../src/utils/logger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
@@ -23,20 +29,9 @@ export const initializeFirebase = () => {
       return;
     }
 
-    // Option 1: Load from service account JSON file (recommended for development)
-    // Uncomment this to use the service account JSON file:
-    // import serviceAccount from './nextg-lms-service.json' assert { type: 'json' };
-    // admin.initializeApp({
-    //   credential: admin.credential.cert(serviceAccount),
-    //   databaseURL: process.env.FIREBASE_DATABASE_URL,
-    // });
-
-    // Option 2: Load from environment variables (recommended for production)
-    const serviceAccount = {
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    };
+    // Load service account from JSON file
+    const serviceAccountPath = join(__dirname, 'nextg-lms-service.json');
+    const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
@@ -47,7 +42,7 @@ export const initializeFirebase = () => {
     db = admin.firestore();
 
     logger.info('✅ Firebase initialized successfully');
-    logger.info(`📦 Project: ${process.env.FIREBASE_PROJECT_ID}`);
+    logger.info(`📦 Project: ${serviceAccount.project_id}`);
   } catch (error) {
     logger.error('❌ Firebase initialization failed:', error);
     throw error;
