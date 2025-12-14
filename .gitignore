@@ -12,6 +12,8 @@ pnpm-lock.yaml
 # Firebase
 firebase-adminsdk.json
 serviceAccountKey.json
+config/nextg-lms-service.json
+config/*.json
 
 # Logs
 logs/
