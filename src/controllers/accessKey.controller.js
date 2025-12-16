@@ -297,6 +297,22 @@ export const validateAccessKey = async (req, res) => {
         accessKey: key,
         grantedAt: new Date().toISOString(),
       });
+
+      // Also update user's enrolledCourses array
+      const userDoc = await db.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        const enrolledCourses = userData.enrolledCourses || [];
+        
+        // Add courseId if not already enrolled
+        if (!enrolledCourses.includes(courseId)) {
+          enrolledCourses.push(courseId);
+          await db.collection('users').doc(userId).update({
+            enrolledCourses,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      }
     }
 
     logger.info(`Access key validated: ${key} for course: ${courseId}`);

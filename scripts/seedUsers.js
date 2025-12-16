@@ -35,6 +35,8 @@ const db = admin.firestore();
 
 const users = [
   {
+    firstName: 'Admin',
+    lastName: 'User',
     name: 'Admin User',
     email: 'admin@nextgenacademy.com',
     password: 'admin123',
@@ -43,6 +45,8 @@ const users = [
     bio: 'System Administrator',
   },
   {
+    firstName: 'John',
+    lastName: 'Doe',
     name: 'John Doe',
     email: 'john@example.com',
     password: 'student123',
@@ -51,6 +55,8 @@ const users = [
     bio: 'Passionate learner interested in web development and design',
   },
   {
+    firstName: 'Jane',
+    lastName: 'Smith',
     name: 'Jane Smith',
     email: 'jane@example.com',
     password: 'student123',
@@ -81,12 +87,16 @@ async function seedUsers() {
 
       // Create user document
       const userDoc = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
         name: userData.name,
         email: userData.email,
         password: hashedPassword,
         role: userData.role,
         profileImage: userData.profileImage,
         bio: userData.bio,
+        cart: [], // Shopping cart items
+        enrolledCourses: [], // Course IDs user has access to
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       };
