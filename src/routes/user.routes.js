@@ -8,11 +8,36 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
+  getEnrolledCourses,
+  syncEnrolledCourses,
+  uploadProfilePhoto,
+  handleProfilePhotoUpload,
   deleteUser,
 } from '../controllers/user.controller.js';
 import { verifyToken, isAdmin } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
+
+/**
+ * @route   POST /api/users/upload-profile-photo
+ * @desc    Upload profile photo
+ * @access  Private
+ */
+router.post('/upload-profile-photo', verifyToken, uploadProfilePhoto, handleProfilePhotoUpload);
+
+/**
+ * @route   GET /api/users/enrolled-courses
+ * @desc    Get user's enrolled courses
+ * @access  Private
+ */
+router.get('/enrolled-courses', verifyToken, getEnrolledCourses);
+
+/**
+ * @route   POST /api/users/sync-enrolled-courses
+ * @desc    Sync enrolled courses from frontend to database
+ * @access  Private
+ */
+router.post('/sync-enrolled-courses', verifyToken, syncEnrolledCourses);
 
 /**
  * @route   GET /api/users
