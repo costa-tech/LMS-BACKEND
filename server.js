@@ -48,27 +48,46 @@ initializeFirebase();
 // Security middleware
 app.use(helmet()); // Adds security headers
 
-// CORS configuration - Allow multiple origins
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'http://localhost:5174',
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
-app.use(cors({
+// CORS configuration - Allow all localhost origins in development
+const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like mobile apps, Postman, curl)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    // In development, allow all localhost origins
+    if (process.env.NODE_ENV !== 'production' && origin.startsWith('http://localhost')) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    
+    // In production, check specific origins
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://localhost:5174',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    
+    // In development, allow it anyway
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    return callback(new Error(msg), false);
   },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Request logging
 app.use(morgan('combined', {
@@ -86,6 +105,15 @@ app.use(rateLimiter);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Serve frontend images (for course images, profile pics, etc.)
+const frontendPublicPath = path.join(__dirname, '..', 'nextgen-lms', 'public');
+app.use('/images', express.static(path.join(frontendPublicPath, 'images')));
+app.use('/public', express.static(frontendPublicPath));
+
+// Log static paths for debugging
+logger.info(`📁 Serving static files from: ${path.join(__dirname, 'public/uploads')}`);
+logger.info(`📁 Serving frontend images from: ${frontendPublicPath}`);
 
 // ============================================
 // ROUTES
