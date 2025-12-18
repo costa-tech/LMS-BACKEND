@@ -5,9 +5,6 @@ yarn.lock
 pnpm-lock.yaml
 
 # Environment Variables
-.env
-.env.local
-.env.production
 
 # Firebase
 firebase-adminsdk.json
@@ -47,3 +44,4 @@ coverage/
 # Temporary files
 tmp/
 temp/
+config.bat
